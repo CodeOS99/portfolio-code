@@ -8,10 +8,15 @@
   </head>
   <body class="bg-black">
     <div id="app">
-      <h1 class="text-6xl font-bold italic font-mono text-center text-off-white">
-        <span id="intro1" class="typewriter">Hey!</span><br>
-        <span id="intro2" class="typewriter hidden">I... uhh... need a few moments to clean up the site. Do you mind refreshing it?</span>
-      </h1>
+      <div id="terminal-view" class="hidden fixed inset-0 z-50 bg-black text-green-500 font-mono p-10 text-lg">
+        <div class="max-w-2xl">
+          <span id="terminal-text" class="whitespace-pre-wrap inline"></span><span class="animate-pulse inline-block ml-1">_</span>
+        </div>
+      </div>
+
+      <div id="polished-site" class="hidden text-off-white text-3xl">
+        <h1>I'm polished!</h1>
+      </div>
     </div>
     <script type="module" src="./src/main.js"></script>
   </body>

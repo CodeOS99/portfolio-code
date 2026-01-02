@@ -7,7 +7,9 @@
   --color-off-white: #fefcfd;
   --color-red: #F05D5E;
 }
-
+.text-red {
+    color: var(--color-red);
+}
 /* Custom Utilities */
 .text-shadow-neon {
   text-shadow: 
@@ -16,6 +18,15 @@
     0 0 calc(18px * 0.5) var(--color-neon),
     0 0 calc(39px * 0.5) var(--color-neon),
     0 0 calc(79px * 0.5) var(--color-neon);
+}
+
+.text-shadow-green {
+  text-shadow: 
+    0 0 calc(5px * 0.5) var(--color-off-white),
+    0 0 calc(7px * 0.5) var(--color-off-white),
+    0 0 calc(18px * 0.5) var(--color-green-400),
+    0 0 calc(39px * 0.5) var(--color-green-400),
+    0 0 calc(79px * 0.5) var(--color-green-400);
 }
 
 .typewriter::after {

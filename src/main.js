@@ -1,26 +1,35 @@
 document.addEventListener('DOMContentLoaded', async () => {
-  const intros = []
-  let i = 1;
-  let prev = null;
-  while(true) {
-    let el = document.getElementById(`intro${i}`);
-    if(el !== null) {
-        if(prev !== null) prev.classList.remove("typewriter")
-        el.classList.remove("hidden")
-        await typewriter(el, 70);
-        await delay(1000);
-        prev = el
+    let isPolished = localStorage.getItem('site-polished');
+    if(!isPolished) {
+        const terminalView = document.getElementById("terminal-view");
+        const terminalText = document.getElementById("terminal-text");
+
+        terminalView.classList.remove("hidden");
+
+        const lines = [
+          ">>        Initializing portfolio_v1.0.0 ...",
+          ">>        Main site loaded.",
+          ">>        <span class='text-red'>ERROR: CSS stylesheet corrupted</span>",
+          ">>        Exiting process with code 127",
+          ">> Wait, this is terrible.",
+          ">> Could you please refresh the site?",
+          ">> I need a moment to fix things up..."
+        ]
+
+        localStorage.setItem('site-polished', 'true');
+        for(const line of lines) {
+          if(terminalText.innerHTML !== "") terminalText.innerHTML +="<br>";
+
+          await typeTerminal(terminalText, line);
+          await delay(400);
+        }
     } else {
-      break;
+      document.getElementById("polished-site").classList.remove("hidden");  
     }
-    i++;
-  }
 });
 
-function typewriter(element, baseSpeed = 70) {
+function typeTerminal(container, text) {
   return new Promise(resolve => {
-    const text = element.textContent.trim();
-    element.textContent = '';
     let i = 0;
 
     function type() {
@@ -29,16 +38,23 @@ function typewriter(element, baseSpeed = 70) {
         return;
       }
 
-      element.textContent += text[i];
+      // html tag
+      if (text[i] === '<') {
+        // end
+        const closingTagStart = text.indexOf('</', i);
+        const closingTagEnd = text.indexOf('>', closingTagStart);
+        if (closingTagEnd !== -1) {
+          container.innerHTML += text.substring(i, closingTagEnd + 1);
+          i = closingTagEnd + 1;
+          type(); 
+          return;
+        }
+      }
+
+      // normal
+      container.innerHTML += text[i];
       i++;
-
-      const char = text[i - 1];
-      const delay =
-        char === '.' || char === ',' ? 350 :
-        char === '!' || char === '?' ? 500 :
-        baseSpeed + Math.random() * (Math.random() * 50-25);
-
-      setTimeout(type, delay);
+      setTimeout(type, 30);
     }
 
     type();
@@ -46,5 +62,5 @@ function typewriter(element, baseSpeed = 70) {
 }
 
 function delay(ms) {
-  return new Promise(res => setTimeout(res, ms));
+    return new Promise(res => setTimeout(res, ms));
 }

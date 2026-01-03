@@ -1,4 +1,8 @@
-function Node(x, y, color="255, 0, 0") {
+function lerp(start, end, amount) {
+    return start + (end - start) * amount;
+}
+
+function Node(x, y, color="89, 248, 232") {
     this.anchorX = x;
     this.anchorY = y;
     this.color = color;
@@ -56,15 +60,22 @@ Node.prototype.moveNode = function() {
     this.y += this.vy * this.energy / 100;
 };
 
+function drawCursorHalo() {
+    halo.style.transform =
+  `translate(${haloMouse.x}px, ${haloMouse.y}px) translate(-50%, -50%)`;
+}
+
 const SENSITIVITY = 100;
 const SIBLING_LIMIT = 10;
 const DENSITY = 50
 const ANCHOR_LENGTH = 20;
 const MOUSE_RADIUS = 200;
 const circle = 2 * Math.PI;
+const MOUSE_EASING = .01
+const MASK_RADIUS = 20
 
-var NODES_QTY = 0; // changed after creation
-var nodes = []
+let NODES_QTY = 0; // changed after creation
+let nodes = []
 
 let canvas = document.querySelector('canvas');
 resizeWindow();
@@ -73,6 +84,18 @@ let mouse = {
     x: canvas.width / 2,
     y: canvas.height / 2
 };
+
+let effectiveMouse = {
+    x: canvas.width,
+    y: canvas.height
+};
+
+let haloMouse = {
+    x: mouse.x,
+    y: mouse.y
+};
+
+const HALO_EASE = MOUSE_EASING + .02; // ahead of nodes
 
 let ctx = canvas.getContext('2d');
 if(!ctx) {
@@ -128,37 +151,63 @@ function findSiblings() {
     }
 }
 
+function updateEffectiveMouse() {
+    effectiveMouse.x = lerp(effectiveMouse.x, mouse.x, MOUSE_EASING);
+    effectiveMouse.y = lerp(effectiveMouse.y, mouse.y, MOUSE_EASING);
+}
+
+function updateHaloMouse() {
+    haloMouse.x = lerp(haloMouse.x, mouse.x, HALO_EASE);
+    haloMouse.y = lerp(haloMouse.y, mouse.y, HALO_EASE);
+}
+
 function redrawScene() {
-    resizeWindow();
+    updateScene();
+    draw();
+    
+    requestAnimationFrame(redrawScene);
+}
+
+function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for(let i = 0; i < NODES_QTY; i++) {
+        let node = nodes[i];
+        if (node.brightness) {
+            node.drawNode();
+            node.drawConnection();
+        }
+    }
+    ctx.save();
+    ctx.globalCompositeOperation = 'difference';
+    drawCursorHalo();
+    ctx.restore();
+}
+
+function updateScene() {
     findSiblings();
-    let i, node, distance;
-    for(i = 0; i < NODES_QTY; i++) {
+
+    updateEffectiveMouse();
+    updateHaloMouse();
+
+    let node, distance;
+    for(let i = 0; i < NODES_QTY; i++) {
         node = nodes[i];
         distance = calcDistance({
-            x: mouse.x,
-            y: mouse.y
+            x: effectiveMouse.x,
+            y: effectiveMouse.y
         }, node);
         if(distance < MOUSE_RADIUS) {
             node.brightness = 1 - distance / MOUSE_RADIUS;
         } else {
             node.brightness = 0
         }
-    }
-    for(i = 0; i < NODES_QTY; i++) {
-        node = nodes[i];
-        if (node.brightness) {
-            node.drawNode();
-            node.drawConnection();
-        }
         node.moveNode();
     }
-    requestAnimationFrame(redrawScene);
 }
 
 function initHandlers() {
     document.addEventListener('resize', resizeWindow, false);
-    canvas.addEventListener('mousemove', mousemoveHandler, false);
+    document.addEventListener('mousemove', mousemoveHandler);
 }
 
 function resizeWindow() {
@@ -167,8 +216,11 @@ function resizeWindow() {
 }
 
 function mousemoveHandler(e) {
-    mouse.x = e.clientX;
-    mouse.y = e.clientY;
+    // const rect = canvas.getBoundingClientRect();
+    const rect = {left: 0, top:0};
+
+    mouse.x = e.clientX - rect.left;
+    mouse.y = e.clientY - rect.top;
 }
 
 initHandlers();

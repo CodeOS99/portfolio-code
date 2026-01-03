@@ -54,6 +54,7 @@
 }
 
 canvas {
+  pointer-events: none; /* ← allows mouse events to reach underlying DOM */
   position: relative;
   top: 0;
   bottom: 0;
@@ -222,4 +223,19 @@ canvas {
 }
 .crt {
   animation: textShadow 1.6s infinite;
+}
+
+#halo {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 40px;
+  height: 40px;
+  
+  border-radius: 50%;
+  pointer-events: none;
+  background: white;
+
+  mix-blend-mode: difference; /* 🔥 magic */
+  transform: translate(-50%, -50%);
 }

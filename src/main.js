@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           await delay(400);
         }
     } else {
-      document.getElementById("polished-site").classList.remove("hidden");  
+      document.getElementById("polished-site").classList.remove("hidden");
     }
 });
 

@@ -1,31 +1,39 @@
 document.addEventListener('DOMContentLoaded', async () => {
-    let isPolished = localStorage.getItem('site-polished');
-    if(!isPolished) {
-        const terminalView = document.getElementById("terminal-view");
-        const terminalText = document.getElementById("terminal-text");
+  const isPolished = localStorage.getItem('site-polished');
 
-        terminalView.classList.remove("hidden");
+  const terminalView = document.getElementById("terminal-view");
+  const terminalText = document.getElementById("terminal-text");
+  const polishedSite = document.getElementById("polished-site");
 
-        const lines = [
-          ">>        Initializing portfolio_v1.0.0 ...",
-          ">>        Main site loaded.",
-          ">>        <span class='text-red'>ERROR: CSS stylesheet corrupted</span>",
-          ">>        Exiting process with code 127",
-          ">> Wait, this is terrible.",
-          ">> Could you please refresh the site?",
-          ">> I need a moment to fix things up..."
-        ]
+  if (!isPolished) {
+    terminalView.classList.remove("hidden");
 
-        localStorage.setItem('site-polished', 'true');
-        for(const line of lines) {
-          if(terminalText.innerHTML !== "") terminalText.innerHTML +="<br>";
+    const lines = [
+      '>>        Capturing viewer attention...',
+      '>>        Pretending to load the breath-taking website...',
+      '>>        Ready to impress.'
+    ];
 
-          await typeTerminal(terminalText, line);
-          await delay(400);
-        }
-    } else {
-      document.getElementById("polished-site").classList.remove("hidden");
+    for (const line of lines) {
+      if (terminalText.innerHTML !== "") terminalText.innerHTML += "<br>";
+      await typeTerminal(terminalText, line);
+      await delay(200);
     }
+
+    // short pause, then transition
+    await delay(600);
+
+    terminalView.classList.add("fade-out");
+
+    setTimeout(() => {
+      terminalView.classList.add("hidden");
+      polishedSite.classList.remove("hidden");
+      localStorage.setItem('site-polished', 'true');
+    }, 500);
+
+  } else {
+    polishedSite.classList.remove("hidden");
+  }
 });
 
 function typeTerminal(container, text) {

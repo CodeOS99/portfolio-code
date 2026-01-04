@@ -239,3 +239,12 @@ canvas {
   mix-blend-mode: difference; /* 🔥 magic */
   transform: translate(-50%, -50%);
 }
+
+#terminal-view {
+  opacity: 1;
+  transition: opacity 0.8s ease;
+}
+
+#terminal-view.fade-out {
+  opacity: 0;
+}
